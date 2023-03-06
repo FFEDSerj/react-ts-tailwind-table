@@ -1,11 +1,9 @@
+import { useTableData } from "../context/TableContext";
 import { generatedNumberArray } from "../utils/generateNumberArray";
 
-type TableHeaderProps = {
-  headerNumber: number;
-};
-
-export const TableHeader = ({ headerNumber }: TableHeaderProps) => {
-  const numArray = generatedNumberArray(headerNumber);
+export const TableHeader = () => {
+  const { colsNumber } = useTableData();
+  const numArray = generatedNumberArray(colsNumber);
   return (
     <thead>
       <tr>
