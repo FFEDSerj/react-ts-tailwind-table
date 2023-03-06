@@ -1,6 +1,6 @@
 import { TableBody } from "./components/TableBody";
 import { TableHeader } from "./components/TableHeader";
-import { Cell } from "./types";
+import type { Cell } from "./types";
 import { randomNumber } from "./utils/randomNumber";
 
 function TableApp() {
@@ -14,10 +14,10 @@ function TableApp() {
 
   return (
     <main className="mx-auto p-10">
-      <h1 className="font-mono font-semibold text-3xl">Hi!</h1>
-      <table className="table-fixed border-collapse border border-slate-500 ">
+      <h1 className="font-semibold text-3xl">Hi!</h1>
+      <table className="font-mono table-fixed border-collapse border border-slate-500 ">
         <TableHeader headerNumber={COLS} />
-        <TableBody cells={initialCells} rowLength={ROWS}/>
+        <TableBody cells={initialCells} rowLength={ROWS} colLength={COLS} />
       </table>
     </main>
   );

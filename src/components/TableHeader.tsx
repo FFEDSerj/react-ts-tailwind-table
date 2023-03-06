@@ -12,9 +12,10 @@ export const TableHeader = ({ headerNumber }: TableHeaderProps) => {
         <th className="border border-slate-600 p-2"></th>
         {numArray.map((num) => (
           <th key={num} className="border border-slate-600 p-2">
-            Column #{num}
+            Col #{num}
           </th>
         ))}
+        <th className="border border-slate-600 p-2">Row Sum</th>
       </tr>
     </thead>
   );

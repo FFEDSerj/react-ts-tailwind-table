@@ -1,4 +1,5 @@
-import { Cell } from "../types";
+import type { Cell } from "../types";
+import { CellAmount } from "./CellAmount";
 
 type TableRowProps = {
   rowCells: Cell[];
@@ -6,14 +7,14 @@ type TableRowProps = {
 };
 
 export const TableRow = ({ rowCells, rowPosition }: TableRowProps) => {
+  const rowSum = rowCells.reduce((sum, val) => sum + val.amount, 0);
   return (
     <tr>
       <td className="border border-slate-600 p-2">Row #{rowPosition}</td>
       {rowCells.map(({ id, amount }) => (
-        <td key={id} className="border border-slate-600 text-center">
-          {amount}
-        </td>
+        <CellAmount key={id} amount={amount} />
       ))}
+      <td className="border border-slate-600 p-2 dark:bg-gray-300 text-center">{rowSum}</td>
     </tr>
   );
 };
