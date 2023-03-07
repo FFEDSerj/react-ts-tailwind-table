@@ -1,13 +1,13 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import type { Cell } from "../types";
 import { generateCellsArray } from "../utils/generateCellsArray";
-import { randomNumber } from "../utils/randomNumber";
 
 interface ITableContext {
   cells: Cell[];
   rowsNumber: number;
   colsNumber: number;
   incrementCellAmountByOne: (id: Cell["id"]) => void;
+  removeRow: (id: number) => void;
 }
 
 const initialData: ITableContext = {
@@ -15,15 +15,30 @@ const initialData: ITableContext = {
   rowsNumber: 0,
   colsNumber: 0,
   incrementCellAmountByOne: (id) => {},
+  removeRow: (id) => {},
 };
 
 const TableContext = createContext<ITableContext>(initialData);
 
 export const TableContextProvider = ({ children }: { children: ReactNode }) => {
-  const ROWS = 10; // For now
-  const COLS = 10; // For now
+  const [rowNumber, setRowNumber] = useState(10);
+  const [colNumber, setColNumber] = useState(10);
 
-  const [cells, setCells] = useState<Cell[]>(generateCellsArray(ROWS * COLS));
+  const [cells, setCells] = useState<Cell[]>(
+    generateCellsArray(rowNumber * colNumber)
+  );
+
+  const removeRow = (id: number) => {
+    const startIndex = cells.findIndex((c) => c.id === id);
+
+    const newCells = [
+      ...cells.slice(0, startIndex),
+      ...cells.slice(startIndex + colNumber),
+    ];
+
+    setCells(newCells);
+    setRowNumber(rowNumber - 1);
+  };
 
   const incrementCellAmountByOne = (id: Cell["id"]) => {
     const cellsCopy = cells.slice().map((cell) => {
@@ -41,9 +56,10 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
 
   const value = {
     cells,
-    rowsNumber: ROWS,
-    colsNumber: COLS,
+    rowsNumber: rowNumber,
+    colsNumber: colNumber,
     incrementCellAmountByOne,
+    removeRow,
   };
 
   return (

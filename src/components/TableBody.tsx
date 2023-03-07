@@ -1,5 +1,4 @@
 import { useTableData } from "../context/TableContext";
-import type { Cell } from "../types";
 import { calcColsAverageValue } from "../utils/calcColsAverageValue";
 import { generatedNumberArray } from "../utils/generateNumberArray";
 import { AverageValue } from "./AverageValue";
@@ -7,26 +6,31 @@ import { TableRow } from "./TableRow";
 
 export const TableBody = () => {
   const { cells, colsNumber, rowsNumber } = useTableData();
-  const averageValuesCells = generatedNumberArray(colsNumber);
-  const colAverageValues = calcColsAverageValue(colsNumber, cells);
+  const numberRowArray = generatedNumberArray(rowsNumber);
+  const numberColArray = generatedNumberArray(colsNumber);
 
-  const cellsByRowNumber: Cell[][] = [];
-
-  for (let i = 0; i < rowsNumber; i++) {
-    const slicedCells = cells.slice(i * rowsNumber, rowsNumber * (i + 1));
-    cellsByRowNumber.push(slicedCells);
-  }
+  const colAverageValues = calcColsAverageValue(colsNumber, rowsNumber, cells);
 
   return (
     <tbody>
-      {cellsByRowNumber.map((cellList, i) => (
-        <TableRow key={i + 1} rowCells={cellList} rowPosition={i + 1} />
-      ))}
+      {numberRowArray.map((rowNumber, index) => {
+        const slicedItems = cells.slice(
+          colsNumber * index,
+          colsNumber * rowNumber
+        );
+        return (
+          <TableRow
+            rowPosition={rowNumber}
+            rowCells={slicedItems}
+            key={rowNumber}
+          />
+        );
+      })}
       <tr>
         <td className="border border-slate-600 p-2 font-medium">
           Average values
         </td>
-        {averageValuesCells.map((val, i) => (
+        {numberColArray.map((val, i) => (
           <AverageValue key={val} value={colAverageValues[i]} />
         ))}
       </tr>

@@ -14,6 +14,7 @@ export const TableHeader = () => {
           </th>
         ))}
         <th className="border border-slate-600 p-2">Row Sum</th>
+        <th className="border border-slate-600 p-2"></th>
       </tr>
     </thead>
   );
