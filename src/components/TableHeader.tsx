@@ -2,7 +2,7 @@ import { useTableData } from "../context/TableContext";
 import { generatedNumberArray } from "../utils/generateNumberArray";
 
 export const TableHeader = () => {
-  const { colsNumber } = useTableData();
+  const { colNumber: colsNumber } = useTableData();
   const numArray = generatedNumberArray(colsNumber);
   return (
     <thead>

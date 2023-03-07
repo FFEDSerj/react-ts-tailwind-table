@@ -5,18 +5,18 @@ import { AverageValue } from "./AverageValue";
 import { TableRow } from "./TableRow";
 
 export const TableBody = () => {
-  const { cells, colsNumber, rowsNumber } = useTableData();
-  const numberRowArray = generatedNumberArray(rowsNumber);
-  const numberColArray = generatedNumberArray(colsNumber);
+  const { cells, colNumber, rowNumber, addRow } = useTableData();
+  const numberRowArray = generatedNumberArray(rowNumber);
+  const numberColArray = generatedNumberArray(colNumber);
 
-  const colAverageValues = calcColsAverageValue(colsNumber, rowsNumber, cells);
+  const colAverageValues = calcColsAverageValue(colNumber, rowNumber, cells);
 
   return (
     <tbody>
       {numberRowArray.map((rowNumber, index) => {
         const slicedItems = cells.slice(
-          colsNumber * index,
-          colsNumber * rowNumber
+          colNumber * index,
+          colNumber * rowNumber
         );
         return (
           <TableRow
@@ -33,6 +33,15 @@ export const TableBody = () => {
         {numberColArray.map((val, i) => (
           <AverageValue key={val} value={colAverageValues[i]} />
         ))}
+        <td colSpan={2} className="p-2">
+          <button
+            className="text-gray-900 transition-colors bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 h-full w-full"
+            type="button"
+            onClick={addRow}
+          >
+            Add row
+          </button>
+        </td>
       </tr>
     </tbody>
   );
