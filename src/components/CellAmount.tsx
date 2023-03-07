@@ -1,5 +1,6 @@
 import { useTableData } from "../context/TableContext";
 import type { Cell } from "../types";
+import { getClosestValues } from "../utils/getClosestValues";
 
 type CellAmountProps = {
   cell: Cell;
@@ -13,16 +14,29 @@ export const CellAmount = ({
   isShowPercent,
 }: CellAmountProps) => {
   const { id, amount } = cell;
-  const { incrementCellAmountByOne } = useTableData();
+  const {
+    incrementCellAmountByOne,
+    isIncludedId,
+    getHighlightedCellIds,
+    resetHighlightedCells,
+  } = useTableData();
 
-  const percentFromTotal = `${parseFloat(((amount / rowSum) * 100).toFixed(1))}%`;
+  const percentFromTotal = `${parseFloat(
+    ((amount / rowSum) * 100).toFixed(1)
+  )}%`;
+
+  const isHighlighted = isIncludedId(id);
 
   return (
     <>
       {!isShowPercent ? (
         <td
           onClick={() => incrementCellAmountByOne(id)}
-          className="border hover:bg-slate-200 transition-colors cursor-pointer border-slate-600 text-center"
+          onMouseEnter={() => getHighlightedCellIds(cell)}
+          onMouseLeave={resetHighlightedCells}
+          className={`${
+            isHighlighted && "bg-cyan-400"
+          } border hover:bg-slate-200 transition-colors cursor-pointer border-slate-600 text-center`}
         >
           {amount}
         </td>

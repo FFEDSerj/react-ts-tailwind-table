@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 import type { Cell } from "../types";
 import { generateCellsArray } from "../utils/generateCellsArray";
+import { getClosestValues } from "../utils/getClosestValues";
 
 interface ITableContext {
   cells: Cell[];
@@ -9,6 +10,9 @@ interface ITableContext {
   incrementCellAmountByOne: (id: Cell["id"]) => void;
   removeRow: (id: number) => void;
   addRow: () => void;
+  getHighlightedCellIds: (s: Cell) => void;
+  isIncludedId: (id: number) => boolean;
+  resetHighlightedCells: () => void;
 }
 
 const initialData: ITableContext = {
@@ -18,6 +22,9 @@ const initialData: ITableContext = {
   incrementCellAmountByOne: (id) => {},
   removeRow: (id) => {},
   addRow: () => null,
+  getHighlightedCellIds(s) {},
+  isIncludedId: (id) => false,
+  resetHighlightedCells: () => null,
 };
 
 const TableContext = createContext<ITableContext>(initialData);
@@ -25,6 +32,7 @@ const TableContext = createContext<ITableContext>(initialData);
 export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   const [rowNumber, setRowNumber] = useState(11);
   const [colNumber, setColNumber] = useState(10);
+  const [highlightedCells, setHighlightedCells] = useState<number[]>([]);
 
   const [cells, setCells] = useState<Cell[]>(
     generateCellsArray(rowNumber * colNumber)
@@ -64,6 +72,15 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     setCells(cellsCopy);
   };
 
+  const getHighlightedCellIds = (selected: Cell) => {
+    const ids = getClosestValues(cells, selected);
+    setHighlightedCells(ids);
+  };
+
+  const resetHighlightedCells = () => setHighlightedCells([]);
+
+  const isIncludedId = (id: Cell["id"]) => highlightedCells.includes(id);
+
   const value = {
     cells,
     rowNumber,
@@ -71,6 +88,9 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     incrementCellAmountByOne,
     removeRow,
     addRow,
+    getHighlightedCellIds,
+    isIncludedId,
+    resetHighlightedCells,
   };
 
   return (
