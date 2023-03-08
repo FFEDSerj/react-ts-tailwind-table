@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useReducer } from "react";
 import { generateCellsArray } from "../utils/generateCellsArray";
 import { getClosestAmountCells } from "../utils/getClosestAmountCells";
 import type { Cell } from "../types";
@@ -29,37 +29,62 @@ const initialData: ITableContext = {
 
 const TableContext = createContext<ITableContext>(initialData);
 
-export const TableContextProvider = ({ children }: { children: ReactNode }) => {
-  const [rowNumber, setRowNumber] = useState(11);
-  const [colNumber] = useState(10);
-  const [highlightedCells, setHighlightedCells] = useState<number[]>([]);
+type ReducerState = {
+  rowNumber: number;
+  colNumber: number;
+  highlightedCellIds: number[];
+  cells: Cell[];
+};
 
-  const [cells, setCells] = useState<Cell[]>(
-    generateCellsArray(rowNumber * colNumber)
+const updateDataReducer = (
+  prev: ReducerState,
+  next: Partial<ReducerState>
+) => ({ ...prev, ...next });
+
+const initTableData = (initialState: ReducerState) => {
+  return {
+    ...initialState,
+    cells: generateCellsArray(initialState.colNumber * initialState.rowNumber),
+  };
+};
+
+const defaultDataState = {
+  rowNumber: 11,
+  colNumber: 10,
+  highlightedCellIds: [],
+  cells: [],
+};
+
+export const TableContextProvider = ({ children }: { children: ReactNode }) => {
+  const [data, updateData] = useReducer(
+    updateDataReducer,
+    defaultDataState,
+    initTableData
   );
 
   const removeRow = (id: number) => {
-    const startIndex = cells.findIndex((c) => c.id === id);
+    const startIndex = data.cells.findIndex((c) => c.id === id);
 
     const newCells = [
-      ...cells.slice(0, startIndex),
-      ...cells.slice(startIndex + colNumber),
+      ...data.cells.slice(0, startIndex),
+      ...data.cells.slice(startIndex + data.colNumber),
     ];
 
-    setCells(newCells);
-    setRowNumber(rowNumber - 1);
+    updateData({ cells: newCells, rowNumber: data.rowNumber - 1 });
   };
 
   const addRow = () => {
-    const lastCellId = (cells.at(-1)?.id ?? 0) + 1;
-    setCells((prev) =>
-      prev.concat(...generateCellsArray(colNumber, lastCellId))
-    );
-    setRowNumber(rowNumber + 1);
+    const lastCellId = (data.cells.at(-1)?.id ?? 0) + 1;
+    updateData({
+      cells: data.cells.concat(
+        ...generateCellsArray(data.colNumber, lastCellId)
+      ),
+      rowNumber: data.rowNumber + 1,
+    });
   };
 
   const incrementCellAmountByOne = (id: Cell["id"]) => {
-    const cellsCopy = cells.slice().map((cell) => {
+    const cellsCopy = data.cells.slice().map((cell) => {
       if (cell.id === id) {
         return {
           ...cell,
@@ -69,22 +94,22 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
       return cell;
     });
 
-    setCells(cellsCopy);
+    updateData({ cells: cellsCopy });
   };
 
   const getHighlightedCellIds = (selected: Cell) => {
-    const ids = getClosestAmountCells(cells, selected);
-    setHighlightedCells(ids);
+    const ids = getClosestAmountCells(data.cells, selected);
+    updateData({ highlightedCellIds: ids });
   };
 
-  const resetHighlightedCells = () => setHighlightedCells([]);
+  const resetHighlightedCells = () => updateData({ highlightedCellIds: [] });
 
-  const isIncludedId = (id: Cell["id"]) => highlightedCells.includes(id);
+  const isIncludedId = (id: Cell["id"]) => data.highlightedCellIds.includes(id);
 
   const value = {
-    cells,
-    rowNumber,
-    colNumber,
+    cells: data.cells,
+    rowNumber: data.rowNumber,
+    colNumber: data.colNumber,
     incrementCellAmountByOne,
     removeRow,
     addRow,

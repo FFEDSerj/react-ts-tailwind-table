@@ -1,9 +1,12 @@
+import { randomIntBetweenTwoBounds } from "./randomIntBetweenTwoBounds";
 import type { Cell } from "./../types";
-import { randomNumber } from "./randomNumber";
 
-export const generateCellsArray = (length: number, startId: number = 1): Cell[] => {
+export const generateCellsArray = (
+  length: number,
+  startId: number = 1
+): Cell[] => {
   return Array.from({ length }, (_, i) => ({
     id: i + startId,
-    amount: randomNumber(),
+    amount: randomIntBetweenTwoBounds(100, 999),
   }));
 };
