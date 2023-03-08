@@ -1,30 +1,34 @@
 import { createContext, ReactNode, useContext, useReducer } from "react";
 import { generateCellsArray } from "../utils/generateCellsArray";
 import { getClosestAmountCells } from "../utils/getClosestAmountCells";
-import type { Cell } from "../types";
+import type { Cell, TableNet } from "../types";
 
 interface ITableContext {
   cells: Cell[];
   rowNumber: number;
   colNumber: number;
+  isTableReady: boolean;
   incrementCellAmountByOne: (id: Cell["id"]) => void;
   removeRow: (id: number) => void;
   addRow: () => void;
   getHighlightedCellIds: (s: Cell) => void;
   isIncludedId: (id: number) => boolean;
   resetHighlightedCells: () => void;
+  generateTable: (obj: TableNet) => void;
 }
 
 const initialData: ITableContext = {
   cells: [],
   rowNumber: 0,
   colNumber: 0,
+  isTableReady: false,
   incrementCellAmountByOne: (id) => {},
   removeRow: (id) => {},
   addRow: () => null,
   getHighlightedCellIds(s) {},
   isIncludedId: (id) => false,
   resetHighlightedCells: () => null,
+  generateTable: (obj) => null,
 };
 
 const TableContext = createContext<ITableContext>(initialData);
@@ -34,6 +38,7 @@ type ReducerState = {
   colNumber: number;
   highlightedCellIds: number[];
   cells: Cell[];
+  isTableReady: boolean;
 };
 
 const updateDataReducer = (
@@ -41,26 +46,25 @@ const updateDataReducer = (
   next: Partial<ReducerState>
 ) => ({ ...prev, ...next });
 
-const initTableData = (initialState: ReducerState) => {
-  return {
-    ...initialState,
-    cells: generateCellsArray(initialState.colNumber * initialState.rowNumber),
-  };
-};
-
 const defaultDataState = {
-  rowNumber: 11,
-  colNumber: 10,
+  rowNumber: 1,
+  colNumber: 1,
   highlightedCellIds: [],
   cells: [],
+  isTableReady: false,
 };
 
 export const TableContextProvider = ({ children }: { children: ReactNode }) => {
-  const [data, updateData] = useReducer(
-    updateDataReducer,
-    defaultDataState,
-    initTableData
-  );
+  const [data, updateData] = useReducer(updateDataReducer, defaultDataState);
+
+  const generateTable = ({ cols, rows }: TableNet) => {
+    updateData({
+      isTableReady: true,
+      colNumber: cols,
+      rowNumber: rows,
+      cells: generateCellsArray(cols * rows),
+    });
+  };
 
   const removeRow = (id: number) => {
     const startIndex = data.cells.findIndex((c) => c.id === id);
@@ -116,6 +120,8 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
     getHighlightedCellIds,
     isIncludedId,
     resetHighlightedCells,
+    generateTable,
+    isTableReady: data.isTableReady,
   };
 
   return (

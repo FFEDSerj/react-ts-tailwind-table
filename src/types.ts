@@ -3,4 +3,7 @@ export type Cell = {
   amount: number;
 };
 
-export type Row = { cells: Cell[]; position: number };
+export type TableNet = {
+  cols: number;
+  rows: number;
+};

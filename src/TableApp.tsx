@@ -1,11 +1,12 @@
-import { TableContextProvider } from "./context/TableContext";
+import { TableContextProvider, useTableData } from "./context/TableContext";
 import { Table } from "./components/Table";
+import { Form } from "./components/form/Form";
 
 function TableApp() {
   return (
     <TableContextProvider>
       <main className="mx-auto p-10">
-        <h1 className="font-semibold text-3xl">Hi!</h1>
+        <Form />
         <Table />
       </main>
     </TableContextProvider>
