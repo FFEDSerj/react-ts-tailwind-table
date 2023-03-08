@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext, useState } from "react";
-import type { Cell } from "../types";
 import { generateCellsArray } from "../utils/generateCellsArray";
-import { getClosestValues } from "../utils/getClosestValues";
+import { getClosestAmountCells } from "../utils/getClosestAmountCells";
+import type { Cell } from "../types";
 
 interface ITableContext {
   cells: Cell[];
@@ -31,7 +31,7 @@ const TableContext = createContext<ITableContext>(initialData);
 
 export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   const [rowNumber, setRowNumber] = useState(11);
-  const [colNumber, setColNumber] = useState(10);
+  const [colNumber] = useState(10);
   const [highlightedCells, setHighlightedCells] = useState<number[]>([]);
 
   const [cells, setCells] = useState<Cell[]>(
@@ -73,7 +73,7 @@ export const TableContextProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getHighlightedCellIds = (selected: Cell) => {
-    const ids = getClosestValues(cells, selected);
+    const ids = getClosestAmountCells(cells, selected);
     setHighlightedCells(ids);
   };
 

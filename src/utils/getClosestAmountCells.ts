@@ -1,6 +1,6 @@
-import type { Cell } from "./../types";
+import type { Cell } from "../types";
 
-export const getClosestValues = (
+export const getClosestAmountCells = (
   items: Cell[],
   selected: Cell,
   desiredLength: number = 5
@@ -18,7 +18,7 @@ export const getClosestValues = (
     );
 
     const closestIdx = filtered.findIndex((c) => c.id === closest.id);
-    const id = filtered.splice(closestIdx, 1)[0].id;
+    const { id } = filtered.splice(closestIdx, 1)[0];
     closestCellIds.push(id);
   }
 

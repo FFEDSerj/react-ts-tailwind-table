@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useTableData } from "../context/TableContext";
+import { RemoveRowButton } from "./RemoveRowButton";
+import { TableCell } from "./TableCell";
 import type { Cell } from "../types";
-import { CellAmount } from "./CellAmount";
 
 type TableRowProps = {
   rowCells: Cell[];
@@ -10,7 +10,6 @@ type TableRowProps = {
 
 export const TableRow = ({ rowCells, rowPosition }: TableRowProps) => {
   const [isShowPercent, setShowPercent] = useState(false);
-  const { removeRow } = useTableData();
   const rowSum = rowCells.reduce((sum, val) => sum + val.amount, 0);
 
   return (
@@ -20,7 +19,7 @@ export const TableRow = ({ rowCells, rowPosition }: TableRowProps) => {
           Row #{rowPosition}
         </td>
         {rowCells.map((cell) => (
-          <CellAmount
+          <TableCell
             key={cell.id}
             cell={cell}
             rowSum={rowSum}
@@ -35,13 +34,7 @@ export const TableRow = ({ rowCells, rowPosition }: TableRowProps) => {
           ←{rowSum}
         </td>
         <td className="hover:bg-red-300 border border-slate-600 transition-colors">
-          <button
-            onClick={() => removeRow(rowCells[0].id)}
-            className="text-sm p-2 font-medium"
-            type="button"
-          >
-            Remove
-          </button>
+          <RemoveRowButton id={rowCells[0].id} />
         </td>
       </tr>
     </>
